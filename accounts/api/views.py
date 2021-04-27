@@ -16,11 +16,14 @@ from accounts.api.serializers import (
     SignupSerializer,
 )
 
+
 class UserViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewer or edited
     """
+    # ORM 将db query语句以django的方式写出来
     queryset = User.objects.all().order_by('-date_joined')
+
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
 
