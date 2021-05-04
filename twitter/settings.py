@@ -26,6 +26,7 @@ SECRET_KEY = 'w4%t&@yo0!y*3ysi80b03h7b2w11vxj#$u2n_b@96@zgij8o38'
 DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', '192.168.33.10', 'localhost']
+INTERNAL_IPS = ['127.0.0.1', '192.168.33.10', 'localhost', '10.0.2.2']
 
 
 # Application definition
@@ -38,7 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'rest_framework'
+    'rest_framework',
+    'debug_toolbar',
+    'tweets',
 ]
 #配置翻页机制
 REST_FRAMEWORK = {
@@ -53,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'twitter.urls'
@@ -129,3 +133,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+

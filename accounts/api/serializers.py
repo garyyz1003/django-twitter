@@ -6,7 +6,7 @@ from rest_framework import exceptions
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'email')
+        fields = ('username', 'email',)
 
 
 class LoginSerializer(serializers.Serializer):
