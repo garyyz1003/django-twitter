@@ -17,6 +17,14 @@ class Tweet(models.Model):
     # auto_now 创建的时候自动把当前时间填入
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        # 建立联合索引
+        # 如果要建立单独索引， 可以在对应的field里添加属性 db_index=True
+        index_together = (('user', 'created_at'),)
+        # 指定默认的排序规则 对数据库没有影响
+        # 建立完索引后需要做 makemigrations 和 migrate
+        ordering = ('user', '-created_at')
+
     @property
     def hours_to_now(self):
         # datetime.now() 不带时区信息。 需要增加上utc的时区信息
