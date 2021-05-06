@@ -2,6 +2,9 @@ from django.db import models
 from django.contrib.auth.models import User
 from utils.time_helpers import utc_now
 
+# django 内部支持的一种方法：
+# user.tweet_set 等价于
+# Tweet.objects.filter(user=user)
 
 class Tweet(models.Model):
     # who posts this tweet
@@ -13,6 +16,9 @@ class Tweet(models.Model):
         help_text='who posts this tweet',
         verbose_name='Tweet Poster'
     )
+    # 上述创建user的时候没有创建related_name是因为该model中只有一个 field用到了User
+    # 在有多个fields用到User的时候需要添加related_name
+    # 参考 friendships 中的model
     content = models.CharField(max_length=255)
     # auto_now 创建的时候自动把当前时间填入
     created_at = models.DateTimeField(auto_now_add=True)
