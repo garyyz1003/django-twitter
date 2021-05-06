@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'debug_toolbar',
     'tweets',
+    'friendships',
 ]
 #配置翻页机制
 REST_FRAMEWORK = {
