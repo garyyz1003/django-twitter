@@ -72,7 +72,7 @@ class FriendshipViewSet(viewsets.GenericViewSet):
         # serializer.save()
         # return Response({'success': True}, status=status.HTTP_201_CREATED)
         instance = serializer.save()
-        return Response(FollowingSerializer(instance).dataq, status=status.HTTP_201_CREATED)
+        return Response(FollowingSerializer(instance).data, status=status.HTTP_201_CREATED)
 
     @action(methods=['POST'], detail=True, permission_classes=[IsAuthenticated])
     def unfollow(self, request, pk):
