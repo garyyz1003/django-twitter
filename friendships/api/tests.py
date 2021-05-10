@@ -113,6 +113,8 @@ class FriendshipApiTests(TestCase):
             'dongxie_following0',
         )
 
+
+
     def test_followers(self):
         url = FOLLOWERS_URL.format(self.dongxie.id)
         # post is not allowed
