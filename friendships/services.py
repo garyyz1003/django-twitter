@@ -31,5 +31,3 @@ class FriendshipService(object):
             to_user=user,
         ).prefetch_related('from_user')
         return [friendships.from_user for friendship in friendships]
-
-        pass
