@@ -107,7 +107,7 @@ class FriendshipViewSet(viewsets.GenericViewSet):
         # drop foreign key constraint
 
     def list(self, request):
-        return Response({"message":"This is a friendship home page"})
+        return Response({"message": "This is a friendship home page"})
         # if 'from_user_id' not in request.query_params and 'to_user_id' not in request.query_params:
         #     return Response('missing from or to user_id', status=400)
         #

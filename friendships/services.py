@@ -1,10 +1,11 @@
 from friendships.models import Friendship
 from django.contrib.auth.models import User
 
+
 class FriendshipService(object):
 
     @classmethod
-    def get_followers(self, user):
+    def get_followers(cls, user):
         # 错误的写法一
         # 这种写法会导致 N + 1 Queries 的问题
         # 即， filter 出所有friendships 耗费了一次 Query
@@ -30,4 +31,4 @@ class FriendshipService(object):
         friendships = Friendship.objects.filter(
             to_user=user,
         ).prefetch_related('from_user')
-        return [friendships.from_user for friendship in friendships]
+        return [friendship.from_user for friendship in friendships]
