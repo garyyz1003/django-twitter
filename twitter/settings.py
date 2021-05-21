@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'tweets',
     'friendships',
     'newsfeeds',
+    'comments'
 ]
 #配置翻页机制
 REST_FRAMEWORK = {
