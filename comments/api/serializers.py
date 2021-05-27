@@ -47,3 +47,15 @@ class CommentSerializerForCreate(serializers.ModelSerializer):
             content=validated_data['content'],
         )
 
+
+class CommentSerializerForUpdate(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ('content', )
+
+    def update(self, instance, validated_data):
+        instance.content = validated_data['content']
+        # 由于懒加载的关系 只有save后才能成功创建实例
+        instance.save()
+        # update 方法要求 return 修改后的instance 作为返回值
+        return instance
