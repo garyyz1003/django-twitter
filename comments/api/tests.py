@@ -40,7 +40,7 @@ class CommentApiTests(TestCase):
             'content': '1' * 141,
         })
         print(response.data)
-        self.assertEqual(response.status_code, 400)git
+        self.assertEqual(response.status_code, 400)
         self.assertEqual('content' in response.data['errors'], True)
 
         # tweet_id 和 content 都带才行

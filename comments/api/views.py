@@ -5,7 +5,9 @@ from comments.models import Comment
 from comments.api.serializers import (
     CommentSerializer,
     CommentSerializerForCreate,
+    CommentSerializerForUpdate,
 )
+from comments.api.permissions import IsObjectOwner
 
 
 class CommentViewSet(viewsets.GenericViewSet):
@@ -23,7 +25,7 @@ class CommentViewSet(viewsets.GenericViewSet):
     # GET /api/comments/ -> list
     # GET  /api/comments/1/ -> retrieve
     # DELETE /api/comments/1/ -> destroy
-    # PATCH /api/comments/1/ -> partial_update
+    # PATCH /api/comments/1/ -> partial_update 基本不用
     # PUT /api/comments/1/ -> update
 
     # 此处也是对已有函数重写
@@ -32,6 +34,9 @@ class CommentViewSet(viewsets.GenericViewSet):
         # 不然的话只是一个类名 而不是创建一个实例
         if self.action == 'create':
             return [IsAuthenticated()]
+        if self.action in ['update', 'destroy']:
+            # 虽然只返回IsObjectOwner()功能上也能达到效果，但是提示的错误信息不对，会对用户造成误导
+            return [IsAuthenticated(), IsObjectOwner()]
         return [AllowAny()]
 
     # def list(self, request):
@@ -60,8 +65,27 @@ class CommentViewSet(viewsets.GenericViewSet):
             status=status.HTTP_201_CREATED,
         )
 
-    # def update(self, request):
-    #     pass
-    #
+    def update(self, request, *args, **kwargs):
+        # get_object() 是 DRF 包装的一个函数， 会在找不到的时候raise 404 error
+        # 所以这里无需做额外判断
+        # 如果不指定instance， 在 new serializer会自动调用create 方法
+        # 有了instance就会调用serializer里的update 方法
+        serializer = CommentSerializerForUpdate(
+            instance=self.get_object(),
+            data=request.data,
+        )
+        if not serializer.is_valid():
+            return Response({
+                'message': 'Please check input'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        # save 方法会触发 serializer 里的update方法， 点进 save的具体实现里可以看到
+        # save 是根据 instance 参数有没有传来决定是触发create 还是 update
+        comment = serializer.save()
+        return Response(
+            CommentSerializer(comment).data,
+            status=status.HTTP_200_OK,
+        )
+
+
     # def destroy(self):
     #     pass
