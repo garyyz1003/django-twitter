@@ -9,7 +9,9 @@ from comments.api.serializers import (
 )
 from comments.api.permissions import IsObjectOwner
 
-
+# GenericViewSet如果不定义list方法是不能显示model具体内容的
+# 而ModelViewSet 可以， 可以用来方便测试
+# GenericSerializer和 ModelSerializer同理
 class CommentViewSet(viewsets.GenericViewSet):
     """
     只实现 list， create， update， destroy 的方法
@@ -34,7 +36,7 @@ class CommentViewSet(viewsets.GenericViewSet):
         # 不然的话只是一个类名 而不是创建一个实例
         if self.action == 'create':
             return [IsAuthenticated()]
-        if self.action in ['update', 'destroy']:
+        if self.action in ['destroy', 'update']:
             # 虽然只返回IsObjectOwner()功能上也能达到效果，但是提示的错误信息不对，会对用户造成误导
             return [IsAuthenticated(), IsObjectOwner()]
         return [AllowAny()]
@@ -55,7 +57,8 @@ class CommentViewSet(viewsets.GenericViewSet):
         serializer = CommentSerializerForCreate(data=data)
         if not serializer.is_valid():
             return Response({
-                'message': 'Please check input'
+                'message': 'Please check input',
+                'errors': serializer.errors,
             }, status=status.HTTP_400_BAD_REQUEST)
 
         # save 方法会触发serializer 里的create 方法， 点进 save的具体实现里可以看到
@@ -76,7 +79,8 @@ class CommentViewSet(viewsets.GenericViewSet):
         )
         if not serializer.is_valid():
             return Response({
-                'message': 'Please check input'
+                'message': 'Please check input',
+                'errors': serializer.errors,
             }, status=status.HTTP_400_BAD_REQUEST)
         # save 方法会触发 serializer 里的update方法， 点进 save的具体实现里可以看到
         # save 是根据 instance 参数有没有传来决定是触发create 还是 update
@@ -86,6 +90,12 @@ class CommentViewSet(viewsets.GenericViewSet):
             status=status.HTTP_200_OK,
         )
 
-
-    # def destroy(self):
-    #     pass
+    def destroy(self, request, *args, **kwargs):
+        # 不需要创建serializer
+        comment = self.get_object()
+        comment.delete()
+        # DRF 里默认destroy 返回的是status code = 204 no content
+        # 这里return 了 success=True更直观的让前端去做判断， 所以return 200更合适
+        return Response({
+            'Success': 'True'
+        }, status=status.HTTP_200_OK)
