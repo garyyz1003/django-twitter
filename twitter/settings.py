@@ -23,6 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'w4%t&@yo0!y*3ysi80b03h7b2w11vxj#$u2n_b@96@zgij8o38'
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# 正常情况下 此处应该是False 然后从本地的 localsetting 文件中将其设置为True来overwrite
 DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', '192.168.33.10', 'localhost']
@@ -32,6 +33,7 @@ INTERNAL_IPS = ['127.0.0.1', '192.168.33.10', 'localhost', '10.0.2.2']
 # Application definition
 
 INSTALLED_APPS = [
+    # django default
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,17 +41,24 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # third party packages
     'rest_framework',
+    'django_filters',
     'debug_toolbar',
+
+    # project apps
     'tweets',
     'friendships',
     'newsfeeds',
     'comments'
 ]
-#配置翻页机制
+# 配置翻页机制
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10
+    'PAGE_SIZE': 10,
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ]
 }
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -86,16 +95,7 @@ WSGI_APPLICATION = 'twitter.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'twitter',
-        'HOST': '0.0.0.0',
-        'PORT': '3306',
-        'USER': 'root',
-        'PASSWORD': 'yourpassword', # 这里是自己下载mysql时候输入两次的那个密码
-}
-}
+
 
 
 
@@ -137,4 +137,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-
+# 此处是为了防止在production中由于找不到本地localsettings文件导致整个程序挂掉
+try:
+    from .localsettings import *
+except:
+    pass
