@@ -8,6 +8,8 @@ from comments.api.serializers import (
     CommentSerializerForUpdate,
 )
 from comments.api.permissions import IsObjectOwner
+from utils.decorators import required_params
+
 
 # GenericViewSet如果不定义list方法是不能显示model具体内容的
 # 而ModelViewSet 可以， 可以用来方便测试
@@ -23,7 +25,6 @@ class CommentViewSet(viewsets.GenericViewSet):
     queryset = Comment.objects.all()
     # 需要实现安装django_filter才能使用
     filterset_fields = ('tweet_id',)
-
 
     # 已经被实现好的方法 如果要更改的话就是重写该方法
     # POST /api/comments/ -> create
@@ -44,8 +45,15 @@ class CommentViewSet(viewsets.GenericViewSet):
             return [IsAuthenticated(), IsObjectOwner()]
         return [AllowAny()]
 
+    @required_params(params=['tweet_id'])
     def list(self, request, *args, **kwargs):
-        # 我们的实现中必须要包含tweet_id
+        # 我们的实现中必须要包含tweet_id， 之前使用如下的方式检验的
+        # 因为发现tweet中也要检查user_id 所以我们使用decorator的方式将两个功能相似的步骤简化为一个
+        # if 'tweet_id' not in request.query_params:
+        #     return Response({
+        #         'message': 'missing tweet_id in request',
+        #         'success': False,
+        #     }, status=status.HTTP_400_BAD_REQUEST,)
         # 全部的comment混在一起是没有什么意义的
         if 'tweet_id' not in request.query_params:
             return Response({
@@ -61,8 +69,6 @@ class CommentViewSet(viewsets.GenericViewSet):
             {'comments': serializer.data},
             status=status.HTTP_200_OK,
         )
-
-
 
     def create(self, request, *args, **kwargs):
 
