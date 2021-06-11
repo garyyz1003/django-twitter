@@ -1,10 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
 from utils.time_helpers import utc_now
+# from comments.models import Comment
 
 # django 内部支持的一种方法：
 # user.tweet_set 等价于
 # Tweet.objects.filter(user=user)
+
 
 class Tweet(models.Model):
     # who posts this tweet
@@ -35,6 +37,12 @@ class Tweet(models.Model):
     def hours_to_now(self):
         # datetime.now() 不带时区信息。 需要增加上utc的时区信息
         return (utc_now() - self.created_at).seconds // 3600
+
+    # 也可以用如下的方法得到tweet的comment
+    # @property
+    # def comments(self):
+    #     return self.comment_set.all()
+    # return Comment.objects.filter(tweet=self)
 
     def __str__(self):
         # 这里是执行print(Tweet instance)的时候显示的内容
